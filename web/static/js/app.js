@@ -23,10 +23,16 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 let socket = new Socket("/socket")
 socket.connect()
-let chan = socket.channel("tictactoe:abc123", {})
-chan.join().receive("ok",
+window.chan = socket.channel("tictactoe:abc123", {token: "abc123", name: "Jon Ralfio"})
+window.chan.join().receive("ok",
   msg => {
     console.log("I joined a TicTacToe game")
     console.log(msg);
+  }
+)
+window.chan.on("state",
+  msg => {
+    console.log("game state update")
+    console.log(msg)
   }
 )
