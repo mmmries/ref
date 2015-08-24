@@ -31,4 +31,11 @@ defmodule Ref.TicTacToe do
         {:reply, {:error, "game is full"}, state}
     end
   end
+
+  def handle_info(:timeout, state) do
+    {:stop, "The game timed out from inactivity", state}
+  end
+  def handle_info(msg, state) do
+    {:stop, "Received unexpected message #{inspect msg}", state}
+  end
 end
