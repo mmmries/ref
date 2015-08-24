@@ -2,7 +2,7 @@ defmodule Ref.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "rooms:*", Ref.RoomChannel
+  channel "tictactoe:*", Ref.TicTacToeChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
