@@ -84,7 +84,14 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
-  def game_over?([x,x,x,_,_,_,_,_,_]), do: x
+  def game_over?([x,x,x,_,_,_,_,_,_]) when x != nil, do: x
+  def game_over?([_,_,_,x,x,x,_,_,_]) when x != nil, do: x
+  def game_over?([_,_,_,_,_,_,x,x,x]) when x != nil, do: x
+  def game_over?([x,_,_,x,_,_,x,_,_]) when x != nil, do: x
+  def game_over?([_,x,_,_,x,_,_,x,_]) when x != nil, do: x
+  def game_over?([_,_,x,_,_,x,_,_,x]) when x != nil, do: x
+  def game_over?([x,_,_,_,x,_,_,_,x]) when x != nil, do: x
+  def game_over?([_,_,x,_,x,_,x,_,_]) when x != nil, do: x
   def game_over?(board) do
     case Enum.any?(board, &( &1 == nil) ) do
       true -> false
