@@ -3,19 +3,19 @@ defmodule Ref.TicTacToe do
   @timeout 60_000 #if the game is inactive for 60 seconds it terminates itself
 
   ## Public Interface
-  def join_or_create_game(game_name, user) do
-    atom = name2atom(game_name)
+  def join_or_create_game(topic, user) do
+    atom = String.to_atom(topic)
     case Process.whereis(atom) do
       nil ->
-        {:ok, pid} = GenServer.start(__MODULE__, "tictactoe:#{game_name}", name: atom)
+        {:ok, pid} = GenServer.start(__MODULE__, topic, name: atom)
         GenServer.call(pid, {:join, user})
       pid ->
         GenServer.call(pid, {:join, user})
     end
   end
 
-  def move(game_name, move) do
-    GenServer.call(name2atom(game_name), {:move, move})
+  def move(topic, move) do
+    GenServer.call(String.to_atom(topic), {:move, move})
   end
 
   ## Callbacks
