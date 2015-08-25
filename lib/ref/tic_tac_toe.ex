@@ -4,22 +4,26 @@ defmodule Ref.TicTacToe do
 
   ## Public Interface
   def join_or_create_game(game_name, user) do
-    game_atom = "tictactoe:#{game_name}" |> String.to_atom
-    case Process.whereis(game_atom) do
+    atom = name2atom(game_name)
+    case Process.whereis(atom) do
       nil ->
-        {:ok, pid} = GenServer.start(__MODULE__, "tictactoe:#{game_name}", name: game_atom)
+        {:ok, pid} = GenServer.start(__MODULE__, "tictactoe:#{game_name}", name: atom)
         GenServer.call(pid, {:join, user})
       pid ->
         GenServer.call(pid, {:join, user})
     end
   end
 
+  def move(game_name, move) do
+    GenServer.call(name2atom(game_name), {:move, move})
+  end
+
   ## Callbacks
-  def init(game_id) do
+  def init(topic) do
     {:ok, %{
       board: [nil, nil, nil, nil, nil, nil, nil, nil, nil],
-      game_id: game_id,
       players: %{},
+      topic: topic,
       whose_turn: "X",
     }, @timeout}
   end
@@ -38,15 +42,45 @@ defmodule Ref.TicTacToe do
     end
   end
 
+  def handle_call({:move, %{token: token, square: square}},_from, state) do
+    case Dict.get(state.players, token) do
+    nil -> {:reply, {:error, "you are not in this game"}, state}
+    player ->
+      case player.role == state.whose_turn do
+      false -> {:reply, {:error, "not your turn"}, state}
+      true ->
+        case Enum.at(state.board, square) do
+        nil ->
+          new_board = List.replace_at(state.board, square, player.role)
+          new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
+          broadcast_state(new_state)
+          {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
+        _ ->
+          {:reply, {:error, "invalid move, square taken"}, state}
+        end
+      end
+    end
+  end
+
+  def handle_call(:stop, _from, state), do: {:stop, :normal, state}
+
   def handle_info(:timeout, state) do
     {:stop, "The game timed out from inactivity", state}
+  end
+  def handle_info(:stop, state) do
+    {:stop, :normal, state}
   end
   def handle_info(msg, state) do
     {:stop, "Received unexpected message #{inspect msg}", state}
   end
 
   ## Private Functions
-  def broadcast_state(%{board: board, game_id: gid, whose_turn: whose_turn}) do
-    Ref.Endpoint.broadcast! gid, "state", %{board: board, whose_turn: whose_turn}
+  def broadcast_state(%{board: board, topic: topic, whose_turn: whose_turn}) do
+    Ref.Endpoint.broadcast! topic, "state", %{board: board, whose_turn: whose_turn}
   end
+
+  def name2atom(game_name), do: "tictactoe:#{game_name}" |> String.to_atom
+
+  def next_turn("X"), do: "O"
+  def next_turn("O"), do: "X"
 end

@@ -21,4 +21,14 @@ defmodule TicTacToeGameTest do
     assert {:ok, "O"} = TicTacToe.join_or_create_game("broadtest", %{token: "t2", name: "bob"})
     assert_broadcast "state", %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
   end
+
+  test "players can make a move" do
+    assert {:ok, "X"} = TicTacToe.join_or_create_game("movetest", %{token: "t1", name: "george"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game("movetest", %{token: "t2", name: "bob"})
+
+    assert {:ok, %{board: board, whose_turn: "O"}} = TicTacToe.move("movetest", %{token: "t1", square: 0})
+    assert board == ["X",nil,nil,nil,nil,nil,nil,nil,nil]
+    assert {:ok, %{board: board, whose_turn: "X"}} = TicTacToe.move("movetest", %{token: "t2", square: 1})
+    assert board == ["X","O",nil,nil,nil,nil,nil,nil,nil]
+  end
 end
