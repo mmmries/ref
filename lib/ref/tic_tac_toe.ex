@@ -32,11 +32,12 @@ defmodule Ref.TicTacToe do
     case Enum.count(players) do
       0 ->
         players = Dict.put(players, token, %{name: name, role: "X"})
-        {:reply, {:ok, "X"}, Dict.put(state, :players, players), @timeout}
+        new_state = %{state | players: players}
+        {:reply, {:ok, "X"}, new_state, @timeout}
       1 ->
         players = Dict.put(players, token, %{name: name, role: "O"})
-        broadcast_state(state)
-        {:reply, {:ok, "O"}, Dict.put(state, :players, players), @timeout}
+        new_state = %{state | players: players}
+        {:reply, {:ok, "O", :broadcast, public_state(new_state)}, new_state, @timeout}
       _else ->
         {:reply, {:error, "game is full"}, state, @timeout}
     end
@@ -53,7 +54,6 @@ defmodule Ref.TicTacToe do
         nil ->
           new_board = List.replace_at(state.board, square, player.role)
           new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
-          broadcast_state(new_state)
           {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
         _ ->
           {:reply, {:error, "invalid move, square taken"}, state}
@@ -75,11 +75,9 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
-  def broadcast_state(%{board: board, topic: topic, whose_turn: whose_turn}) do
-    Ref.Endpoint.broadcast! topic, "state", %{board: board, whose_turn: whose_turn}
+  def public_state(%{board: board, topic: topic, whose_turn: whose_turn}) do
+    %{board: board, whose_turn: whose_turn}
   end
-
-  def name2atom(game_name), do: "tictactoe:#{game_name}" |> String.to_atom
 
   def next_turn("X"), do: "O"
   def next_turn("O"), do: "X"
