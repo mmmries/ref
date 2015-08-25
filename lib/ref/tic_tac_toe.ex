@@ -62,7 +62,7 @@ defmodule Ref.TicTacToe do
     end
   end
 
-  def handle_call(:stop, _from, state), do: {:stop, :normal, state}
+  def handle_call(:stop, _from, state), do: {:stop, :normal, :stopped, state}
 
   def handle_info(:timeout, state) do
     {:stop, "The game timed out from inactivity", state}
