@@ -57,9 +57,12 @@ defmodule Ref.TicTacToe do
           false ->
             new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
             {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
-          true ->
+          :tie ->
             new_state = %{state | board: new_board, whose_turn: nil}
-            {:stop, :normal, {:game_over, public_state(new_state)}, new_state}
+            {:stop, :normal, {:game_over, public_state(new_state), :tie}, new_state}
+          winner ->
+            new_state = %{state | board: new_board, whose_turn: nil}
+            {:stop, :normal, {:game_over, public_state(new_state), winner}, new_state}
           end
         _ ->
           {:reply, {:error, "invalid move, square taken"}, state}
@@ -81,8 +84,13 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
-  def game_over?([x,x,x,_,_,_,_,_,_]), do: true
-  def game_over?(_), do: false
+  def game_over?([x,x,x,_,_,_,_,_,_]), do: x
+  def game_over?(board) do
+    case Enum.any?(board, &( &1 == nil) ) do
+      true -> false
+      false -> :tie
+    end
+  end
 
   def next_turn("X"), do: "O"
   def next_turn("O"), do: "X"

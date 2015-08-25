@@ -2,7 +2,7 @@ defmodule TicTacToeGameTest do
   use ExUnit.Case
 
   alias Ref.TicTacToe
-  @endpoint Ref.Endpoint
+  @endpOint Ref.Endpoint
   @game_atom :"tictactoe:test"
   @game_topic "tictactoe:test"
 
@@ -19,10 +19,10 @@ defmodule TicTacToeGameTest do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
   end
 
-  test "only 2 people can join a game" do
+  test "Only 2 peOple can join a game" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
     assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
-    assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snob"})
+    assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snOb"})
   end
 
   test "the game state is returned for broadcast when the game is ready" do
@@ -49,8 +49,24 @@ defmodule TicTacToeGameTest do
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 3})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 1})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 4})
-    assert {:game_over, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
+    assert {:game_over, game_state, "X"} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
     assert game_state == %{board: ["X","X","X","O","O",nil,nil,nil,nil], whose_turn: nil}
+    assert nil = Process.whereis(@game_atom)
+  end
+
+  test "games end in cats cradle" do
+    assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "bob"})
+    assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "rob"})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 0})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 1})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 3})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 4})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 6})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 5})
+    assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 8})
+    assert {:game_over, game_state, :tie} = TicTacToe.move(@game_topic, %{token: "t1", square: 7})
+    assert game_state == %{board: ["X","O","X","O","X","X","O","X","O"], whose_turn: nil}
     assert nil = Process.whereis(@game_atom)
   end
 end
