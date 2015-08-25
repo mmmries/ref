@@ -53,8 +53,14 @@ defmodule Ref.TicTacToe do
         case Enum.at(state.board, square) do
         nil ->
           new_board = List.replace_at(state.board, square, player.role)
-          new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
-          {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
+          case game_over?(new_board) do
+          false ->
+            new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
+            {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
+          true ->
+            new_state = %{state | board: new_board, whose_turn: nil}
+            {:stop, :normal, {:game_over, public_state(new_state)}, new_state}
+          end
         _ ->
           {:reply, {:error, "invalid move, square taken"}, state}
         end
@@ -75,10 +81,13 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
-  def public_state(%{board: board, topic: topic, whose_turn: whose_turn}) do
-    %{board: board, whose_turn: whose_turn}
-  end
+  def game_over?([x,x,x,_,_,_,_,_,_]), do: true
+  def game_over?(_), do: false
 
   def next_turn("X"), do: "O"
   def next_turn("O"), do: "X"
+
+  def public_state(%{board: board, whose_turn: whose_turn}) do
+    %{board: board, whose_turn: whose_turn}
+  end
 end
