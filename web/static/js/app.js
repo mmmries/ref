@@ -15,11 +15,11 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 
-window.TicTacToe = function(game_id) {
+window.TicTacToe = function(game_id, just_watching) {
   let socket = new Socket("/socket")
   socket.connect()
   let token = ((Math.random() * 10000) + "")
-  let channel = socket.channel("tictactoe:"+game_id, {token: token, name: "anonymous"})
+  let channel = socket.channel("tictactoe:"+game_id, {token: token, name: "anonymous", just_watching: just_watching})
   let log_div = $('#log')
   let log = function(message) {
     let log_entry = document.createElement("div")
@@ -37,8 +37,9 @@ window.TicTacToe = function(game_id) {
 
   channel.join().receive("ok",
     msg => {
-      role = msg.role
-      log("Joined the game! You are "+msg.role);
+      if(msg.role) {
+        log("Joined the game! You are "+msg.role);
+      }
     }
   ).receive("error",
     msg => {
@@ -74,14 +75,16 @@ window.TicTacToe = function(game_id) {
     }
   )
 
-  $('.tic-tac-toe.board').click( function(evt) {
-    let square = $(evt.target).data('square')
-    console.log('trying to take square '+square)
-    channel.push('move', {token: token, square: square}).receive("error",
-      msg => {
-        log(msg.message)
-        stat.text(msg.message)
-      }
-    )
-  });
+  if( !just_watching ) {
+    $('.tic-tac-toe.board').click( function(evt) {
+      let square = $(evt.target).data('square')
+      console.log('trying to take square '+square)
+      channel.push('move', {token: token, square: square}).receive("error",
+        msg => {
+          log(msg.message)
+          stat.text(msg.message)
+        }
+      )
+    });
+  }
 }

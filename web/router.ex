@@ -18,6 +18,7 @@ defmodule Ref.Router do
 
     get "/", PageController, :index
     get "/play/:id", PageController, :play
+    get "/watch/:id", PageController, :watch
   end
 
   # Other scopes may use custom stacks.

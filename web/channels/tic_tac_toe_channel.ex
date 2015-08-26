@@ -1,6 +1,8 @@
 defmodule Ref.TicTacToeChannel do
   use Phoenix.Channel
 
+  def join(topic, %{"just_watching" => true}, socket), do: {:ok, %{}, socket}
+
   def join(topic, %{"token" => token, "name" => name}, socket) do
     case Ref.TicTacToe.join_or_create_game(topic, %{token: token, name: name}) do
       {:ok, role} -> {:ok, %{role: role}, socket}
