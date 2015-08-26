@@ -1,0 +1,30 @@
+<h1>Let's Play Tic-Tac-Toe</h1>
+<h2 id="status"></h4>
+
+<table class="tic-tac-toe board">
+  <tr>
+    <td class="square" data-square="0">&nbsp;</td>
+    <td class="square" data-square="1">&nbsp;</td>
+    <td class="square" data-square="2">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="square" data-square="3">&nbsp;</td>
+    <td class="square" data-square="4">&nbsp;</td>
+    <td class="square" data-square="5">&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="square" data-square="6">&nbsp;</td>
+    <td class="square" data-square="7">&nbsp;</td>
+    <td class="square" data-square="8">&nbsp;</td>
+  </tr>
+</table>
+
+<h2>Game Log</h2>
+<div id="log">
+</div>
+
+<script>
+  window.onload = function(){
+    TicTacToe(<%= @id %>);
+  }
+</script>
