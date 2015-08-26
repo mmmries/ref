@@ -1,6 +1,6 @@
 defmodule Ref.TicTacToe do
   use GenServer
-  @timeout 60_000 #if the game is inactive for 60 seconds it terminates itself
+  @timeout 600_000 # timeout if the game is inactive for 10min
 
   ## Public Interface
   def join_or_create_game(topic, user) do
