@@ -13,26 +13,75 @@
 // to also remove its path from "config.paths.watched".
 import "deps/phoenix_html/web/static/js/phoenix_html"
 
-// Import local files
-//
-// Local files can be imported directly using relative
-// paths "./socket" or full ones "web/static/js/socket".
-
-// import socket from "./socket"
-
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
-let socket = new Socket("/socket")
-socket.connect()
-window.chan = socket.channel("tictactoe:abc123", {token: "abc123", name: "Jon Ralfio"})
-window.chan.join().receive("ok",
-  msg => {
-    console.log("I joined a TicTacToe game")
-    console.log(msg);
-  }
-)
-window.chan.on("state",
-  msg => {
-    console.log("game state update")
-    console.log(msg)
-  }
-)
+
+window.TicTacToe = function(game_id) {
+  let socket = new Socket("/socket")
+  socket.connect()
+  let token = ((Math.random() * 10000) + "")
+  let channel = socket.channel("tictactoe:"+game_id, {token: token, name: "anonymous"})
+  let log_div = $('#log')
+  let log = function(message) {
+    let log_entry = document.createElement("div")
+    log_entry.textContent = message
+    log_div.prepend(log_entry)
+  };
+  let stat = $("#status")
+  let role = null;
+  let render_board = function(board) {
+    for( var i in board ) {
+      let c = board[i] ? board[i] : "-"
+      $('[data-square='+i+']').text(c)
+    }
+  };
+
+  channel.join().receive("ok",
+    msg => {
+      role = msg.role
+      log("Joined the game! You are "+msg.role);
+    }
+  ).receive("error",
+    msg => {
+      log("Failed to join the game: "+msg.message)
+      stat.text("Could not join game: "+msg.message)
+    }
+  )
+
+  channel.on("state",
+    msg => {
+      render_board(msg.board)
+      if( msg.whose_turn == role ) {
+        stat.text("Your turn, make your move")
+      } else {
+        stat.text("Waiting for other player...")
+      }
+    }
+  )
+
+  channel.on("game_over",
+    msg => {
+      render_board(msg.board)
+      log("Game Over!")
+      if(msg.winner == "tie") {
+        log("The game is a tie!")
+        stat.text("The game is a tie!")
+      } else {
+        log(msg.winner+" is the winner!")
+        stat.text(msg.winner+" is the winner!")
+      }
+      channel.leave()
+      socket.disconnect()
+    }
+  )
+
+  $('.tic-tac-toe.board').click( function(evt) {
+    let square = $(evt.target).data('square')
+    console.log('trying to take square '+square)
+    channel.push('move', {token: token, square: square}).receive("error",
+      msg => {
+        log(msg.message)
+        stat.text(msg.message)
+      }
+    )
+  });
+}

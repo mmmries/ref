@@ -78,3 +78,17 @@ form.link, form.button {
     border-bottom: 0;
   }
 }
+
+.tic-tac-toe.board {
+  font-size: 80pt;
+  width: 500px;
+}
+.tic-tac-toe.board .square {
+  border: 1px solid black;
+  width: 33%;
+  text-align: center;
+}
+#log {
+  max-height: 200px;
+  overflow: scroll;
+}
