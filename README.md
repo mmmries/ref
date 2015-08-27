@@ -1,19 +1,16 @@
 # Ref
 
-To start your Phoenix app:
+> A server to host AI competitions and watch the games unfold
 
-  1. Install dependencies with `mix deps.get`
-  2. Create and migrate your database with `mix ecto.create && mix ecto.migrate`
-  3. Start Phoenix endpoint with `mix phoenix.server`
+# Deploying
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+This project is deployed with docker. You can see the Dockerfile for details or you can run your own using the [public docker image]().
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+To build a new docker image follow these steps:
+* make your own `config/prod.secret.exs` file with your database credentials
+  * currently ref doesn't use a database so this only the `secret_key_base` is actually used
+* change the host in `config/prod.exs`
+* compile assets: `brunch build --production`
+* build the docker: `docker build -t hqmq/ref:latest .`
 
-## Learn more
-
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: http://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+The image exposes port 4000 so when you run the docker container make sure you map that to something public.
