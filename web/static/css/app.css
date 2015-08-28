@@ -20,9 +20,30 @@ body, form, ul, table {
   font-family: serif monospace;
   font-size: large;
 }
+.code {
+  font-family: monospace;
+  font-size: medium;
+  color: darkgrey;
+}
+.code::before {
+  content: open-quote;
+}
+.code::after {
+  content: close-quote;
+}
 
 div.row div img {
   max-width: 90%;
+}
+
+div.row.explanation h5 {
+  font-family: monospace;
+  text-align: right;
+}
+
+div.row.explanation.message {
+  margin-top: 30px;
+  border-top: 2px dashed grey;
 }
 
 /* Tic Tac Toe Formatting */

@@ -1,0 +1,169 @@
+<div class="row">
+  <div class="col-lg-12">
+    <h1 style="text-align: center;">Tic-Tac-Toe Socket Tutorial</h1>
+  </div>
+</div>
+
+<div class="row explanation">
+  <div class="col-lg-12">
+    <p>
+      A game of tic-tac-toe is played out by having a websocket for each player.
+      This allows each player to write a program however they like.
+      Each websocket message is a JSON message with a few specific keys.
+    </p>
+    <ul>
+      <li><span class="code">topic</span> Each game happens in a topic. Websockets can join multiple topics at the same time, so you have to send the topic along with each message so that the server knows which game you are playing.</li>
+      <li><span class="code">event</span> The event is a sort of type for a message. It makes it easy to distinguish between an update to the board vs when the game is over.</li>
+      <li><span class="code">ref</span> A ref is a unique identifier for a given message. Each time you send a message to the game asking to make a move, the game can respond that request. You can use the <span class="code">ref</span> to figure out which replies go with each of your requests. Broadcast message that go to everyone in the game do not have a <span class="code">ref</span> because they are not a response to a specific message.</li>
+      <li><span class="code">payload</span> This is where you put any data that are sending and where the server puts any data that is is sending. It is always a JSON object (never a list or a single scalar value).
+    </ul>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    The game begins when a websocket sends a <span class="code">phx_join</span> message.
+    <br />
+    The topic must be prefix with <span class="code">tictactoe:</span> so that the server knows this is going to be a tic-tac-toe game.
+    The <span class="code">token</span> is just a unique identifer for you as a player. This makes it so that your opponent can't make a move when it is your turn without knowing your token.
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>To The Server</h5>
+    <pre>{
+  "topic":"tictactoe:def123",
+  "event":"phx_join",
+  "ref":1,
+  "payload":{
+    "token":"9b4487426762",
+    "name":"Anonymous"
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    The server will send back a <span class="code">phx_reply</span> with either a success or error message.
+    <br /><br />
+    If you joined the game successfully you get back a <span class="code">role</span> which tells you whether you are playing as 'X' or 'O'.
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>From The Server (success)</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"phx_reply",
+  "ref":1,
+  "payload":{
+    "status":"ok",
+    "response":{
+      "role":"X"
+    }
+  }
+}</pre>
+  </div>
+</div>
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    If you failed to join the game you will get an error message like: 'the game is full'.
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>From The Server (error)</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"phx_reply",
+  "ref":1,
+  "payload":{
+    "status":"error",
+    "response":{
+      "message":"game is full"
+    }
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    After your opponent joins the game you will receive your first <span class="code">state</span> message. This message is sent whenever the game board changes and it includes a note about <span class="code">whose_turn</span> it is.
+    <br/><br/>
+    The board is represented as an array of 9 items. This is a list of all the squares from top-left to bottom-right going by row.
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>From The Server (broadcast)</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"state",
+  "ref":null,
+  "payload":{
+    "whose_turn":"O",
+    "board":[null,"X",null,null,null,null,null,null,null]
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    When it is your turn to move you can send a <span class="code">move</span> message with your <span class="code">token</span> and which <span class="code">square</span> you want to take for your turn.
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>To The Server</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"move",
+  "ref":3,
+  "payload":{
+    "token":"9b4487426762",
+    "square":7
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    If your move was valid you will get another <span class="code">state</span> message from the server with the updated board.
+    <br/><br/>
+    If your move was invalid you will get back a <span class="code">phx_reply</span> message with an error message
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>From The Server (error)</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"phx_reply",
+  "ref":3,
+  "payload":{
+    "status":"error",
+    "response":{
+      "message":"not your turn"
+    }
+  }
+}</pre>
+  </div>
+</div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    Players continue to make moves and get board updates until the game is either won, or ends in a tie. The server then sends a <span class="code">game_over</span> message. With a winner of "X", "O" or "tie".
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>From The Server (broadcast)</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"game_over",
+  "ref":null,
+  "payload":{
+    "winner":"O",
+    "whose_turn":null,
+    "board":["O","O","O","X","X",null,"O","X","X"]
+  }
+}</pre>
+  </div>
+</div>
