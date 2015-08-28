@@ -14,7 +14,7 @@
     <ul>
       <li><span class="code">topic</span> Each game happens in a topic. Websockets can join multiple topics at the same time, so you have to send the topic along with each message so that the server knows which game you are playing.</li>
       <li><span class="code">event</span> The event is a sort of type for a message. It makes it easy to distinguish between an update to the board vs when the game is over.</li>
-      <li><span class="code">ref</span> A ref is a unique identifier for a given message. Each time you send a message to the game asking to make a move, the game can respond that request. You can use the <span class="code">ref</span> to figure out which replies go with each of your requests. Broadcast message that go to everyone in the game do not have a <span class="code">ref</span> because they are not a response to a specific message.</li>
+      <li><span class="code">ref</span> A ref is a unique identifier for a given message. Each time you send a message to the game asking to make a move, the game can respond that request. You can use the <span class="code">ref</span> to figure out which replies go with each of your requests. Broadcast messages (that go to everyone in the game) have a <span class="code">ref</span> of NULL because they are not a response to a specific message.</li>
       <li><span class="code">payload</span> This is where you put any data that are sending and where the server puts any data that is is sending. It is always a JSON object (never a list or a single scalar value).
     </ul>
   </div>
@@ -167,3 +167,20 @@
 }</pre>
   </div>
 </div>
+
+<div class="row explanation message">
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>&nbsp;</h5>
+    At this point the game is over and you can leave the game (topic).
+  </div>
+  <div class="col-lg-6 col-md-6 col-sm-6">
+    <h5>To The Server</h5>
+<pre>{
+  "topic":"tictactoe:def123",
+  "event":"phx_leave",
+  "ref":8,
+  "payload":{}
+}</pre>
+  </div>
+</div>
+
