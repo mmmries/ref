@@ -4,12 +4,4 @@ defmodule Ref.PageController do
   def index(conn, _params) do
     render conn, "index.html"
   end
-
-  def play(conn, %{"id" => id}) do
-    render conn, "play.html", id: id, just_watching: false
-  end
-
-  def watch(conn, %{"id" => id}) do
-    render conn, "play.html", id: id, just_watching: true
-  end
 end

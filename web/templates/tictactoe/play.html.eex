@@ -25,6 +25,6 @@
 
 <script>
   window.onload = function(){
-    TicTacToe(<%= @id %>, <%= @just_watching %>);
+    TicTacToe('<%= @id %>', <%= @just_watching %>);
   }
 </script>

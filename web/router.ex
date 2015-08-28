@@ -17,8 +17,8 @@ defmodule Ref.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/play/:id", PageController, :play
-    get "/watch/:id", PageController, :watch
+    get "/tictactoe/play/:id", TictactoeController, :play
+    get "/tictactoe/watch/:id", TictactoeController, :watch
   end
 
   # Other scopes may use custom stacks.
