@@ -15,5 +15,12 @@
     <a href="/tictactoe/tutorial">
       <img src="/images/tic_tac_toe_partial.png" />
     </a>
+    <br/><br/><br/>
+    <h3>Ongoing Games</h3>
+    <ul>
+      <%= for game_id <- @ongoing_games do %>
+        <li><a href="/tictactoe/watch/<%= game_id %>"><%= game_id %></a></li>
+      <% end %>
+    </ul>
   </div>
 </div>
