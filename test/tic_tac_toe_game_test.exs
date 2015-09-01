@@ -7,11 +7,9 @@ defmodule TicTacToeGameTest do
   @game_topic "tictactoe:test"
 
   setup do
-    case Process.whereis(@game_atom) do
-      nil -> :ok
-      _pid ->
-        :stopped = GenServer.call(@game_atom, :stop)
-        :ok
+    TicTacToe.ongoing_games |> Enum.each fn(game_topic) ->
+      game_atom = String.to_atom(game_topic)
+      :stopped = GenServer.call(game_atom, :stop)
     end
   end
 
@@ -68,5 +66,12 @@ defmodule TicTacToeGameTest do
     assert {:game_over, game_state, :tie} = TicTacToe.move(@game_topic, %{token: "t1", square: 7})
     assert game_state == %{board: ["X","O","X","O","X","X","O","X","O"], whose_turn: nil}
     assert nil = Process.whereis(@game_atom)
+  end
+
+  test "provides a list of ongoing games" do
+    assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "bob"})
+    assert [@game_topic] = TicTacToe.ongoing_games
+    assert {:ok, "X"} = TicTacToe.join_or_create_game("tictactoe:booyah", %{token: "t1", name: "bob"})
+    assert ["tictactoe:booyah", @game_topic] = TicTacToe.ongoing_games |> Enum.sort
   end
 end

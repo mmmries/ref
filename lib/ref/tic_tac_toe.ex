@@ -18,6 +18,14 @@ defmodule Ref.TicTacToe do
     GenServer.call(String.to_atom(topic), {:move, move})
   end
 
+  def ongoing_games do
+    Process.registered
+      |> Enum.map(&Atom.to_string/1)
+      |> Enum.filter(fn("tictactoe:"<>_rest) -> true
+                       (_) -> false
+                     end)
+  end
+
   ## Callbacks
   def init(topic) do
     {:ok, %{
