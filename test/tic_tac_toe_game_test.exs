@@ -2,7 +2,7 @@ defmodule TicTacToeGameTest do
   use ExUnit.Case
 
   alias Ref.TicTacToe
-  @endpOint Ref.Endpoint
+  @endpoint Ref.Endpoint
   @game_atom :"tictactoe:test"
   @game_topic "tictactoe:test"
 
@@ -19,10 +19,10 @@ defmodule TicTacToeGameTest do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
   end
 
-  test "Only 2 peOple can join a game" do
+  test "Only 2 people can join a game" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
     assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
-    assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snOb"})
+    assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snob"})
   end
 
   test "the game state is returned for broadcast when the game is ready" do
