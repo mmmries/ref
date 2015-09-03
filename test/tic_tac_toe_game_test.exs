@@ -25,6 +25,8 @@ defmodule TicTacToeGameTest do
 
   test "the game state can be requested" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
+    assert {:ok, game_state} = TicTacToe.current_state(@game_topic)
+    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: nil}
     assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
     assert {:ok, game_state} = TicTacToe.current_state(@game_topic)
     assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}

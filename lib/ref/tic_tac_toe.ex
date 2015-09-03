@@ -37,7 +37,7 @@ defmodule Ref.TicTacToe do
       board: [nil, nil, nil, nil, nil, nil, nil, nil, nil],
       players: %{},
       topic: topic,
-      whose_turn: "X",
+      whose_turn: nil,
     }, @timeout}
   end
 
@@ -53,7 +53,7 @@ defmodule Ref.TicTacToe do
         {:reply, {:ok, "X"}, new_state, @timeout}
       1 ->
         players = Dict.put(players, token, %{name: name, role: "O"})
-        new_state = %{state | players: players}
+        new_state = %{state | players: players, whose_turn: "X"}
         {:reply, {:ok, "O"}, new_state, @timeout}
       _else ->
         {:reply, {:error, "game is full"}, state, @timeout}
