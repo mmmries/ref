@@ -3,6 +3,11 @@ defmodule Ref.TicTacToe do
   @timeout 600_000 # timeout if the game is inactive for 10min
 
   ## Public Interface
+  def current_state(topic) do
+    atom = String.to_atom(topic)
+    GenServer.call(atom, :current_state)
+  end
+
   def join_or_create_game(topic, user) do
     atom = String.to_atom(topic)
     case Process.whereis(atom) do
@@ -36,6 +41,10 @@ defmodule Ref.TicTacToe do
     }, @timeout}
   end
 
+  def handle_call(:current_state, _from, state) do
+    {:reply, {:ok, public_state(state)}, state, @timeout}
+  end
+
   def handle_call({:join, %{token: token, name: name}}, _from, %{players: players}=state) do
     case Enum.count(players) do
       0 ->
@@ -45,7 +54,7 @@ defmodule Ref.TicTacToe do
       1 ->
         players = Dict.put(players, token, %{name: name, role: "O"})
         new_state = %{state | players: players}
-        {:reply, {:ok, "O", :broadcast, public_state(new_state)}, new_state, @timeout}
+        {:reply, {:ok, "O"}, new_state, @timeout}
       _else ->
         {:reply, {:error, "game is full"}, state, @timeout}
     end
@@ -92,25 +101,25 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
-  def game_over?([x,x,x,_,_,_,_,_,_]) when x != nil, do: x
-  def game_over?([_,_,_,x,x,x,_,_,_]) when x != nil, do: x
-  def game_over?([_,_,_,_,_,_,x,x,x]) when x != nil, do: x
-  def game_over?([x,_,_,x,_,_,x,_,_]) when x != nil, do: x
-  def game_over?([_,x,_,_,x,_,_,x,_]) when x != nil, do: x
-  def game_over?([_,_,x,_,_,x,_,_,x]) when x != nil, do: x
-  def game_over?([x,_,_,_,x,_,_,_,x]) when x != nil, do: x
-  def game_over?([_,_,x,_,x,_,x,_,_]) when x != nil, do: x
-  def game_over?(board) do
+  defp game_over?([x,x,x,_,_,_,_,_,_]) when x != nil, do: x
+  defp game_over?([_,_,_,x,x,x,_,_,_]) when x != nil, do: x
+  defp game_over?([_,_,_,_,_,_,x,x,x]) when x != nil, do: x
+  defp game_over?([x,_,_,x,_,_,x,_,_]) when x != nil, do: x
+  defp game_over?([_,x,_,_,x,_,_,x,_]) when x != nil, do: x
+  defp game_over?([_,_,x,_,_,x,_,_,x]) when x != nil, do: x
+  defp game_over?([x,_,_,_,x,_,_,_,x]) when x != nil, do: x
+  defp game_over?([_,_,x,_,x,_,x,_,_]) when x != nil, do: x
+  defp game_over?(board) do
     case Enum.any?(board, &( &1 == nil) ) do
       true -> false
       false -> :tie
     end
   end
 
-  def next_turn("X"), do: "O"
-  def next_turn("O"), do: "X"
+  defp next_turn("X"), do: "O"
+  defp next_turn("O"), do: "X"
 
-  def public_state(%{board: board, whose_turn: whose_turn}) do
+  defp public_state(%{board: board, whose_turn: whose_turn}) do
     %{board: board, whose_turn: whose_turn}
   end
 end

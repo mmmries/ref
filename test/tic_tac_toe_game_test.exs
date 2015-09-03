@@ -19,19 +19,21 @@ defmodule TicTacToeGameTest do
 
   test "Only 2 people can join a game" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
-    assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
     assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snob"})
   end
 
-  test "the game state is returned for broadcast when the game is ready" do
+  test "the game state can be requested" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
-    assert {:ok, "O", :broadcast, game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    assert {:ok, game_state} = TicTacToe.current_state(@game_topic)
     assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
   end
 
   test "players can make a move" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
-    assert {:ok, "O", :broadcast, game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    {:ok, game_state} = TicTacToe.current_state(@game_topic)
     assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
 
     assert {:ok, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 0})
@@ -42,7 +44,7 @@ defmodule TicTacToeGameTest do
 
   test "games end when a player wins" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "bob"})
-    assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "rob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "rob"})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 0})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 3})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 1})
@@ -54,7 +56,7 @@ defmodule TicTacToeGameTest do
 
   test "games end in cats cradle" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "bob"})
-    assert {:ok, "O", :broadcast, _game_state} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "rob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "rob"})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 0})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 1})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})

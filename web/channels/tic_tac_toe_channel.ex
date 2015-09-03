@@ -5,9 +5,8 @@ defmodule Ref.TicTacToeChannel do
 
   def join(topic, %{"token" => token, "name" => name}, socket) do
     case Ref.TicTacToe.join_or_create_game(topic, %{token: token, name: name}) do
-      {:ok, role} -> {:ok, %{role: role}, socket}
-      {:ok, role, :broadcast, game_state} ->
-        send self(), {:initial_game_state, game_state}
+      {:ok, role} ->
+        send self, :broadcast_game_state
         {:ok, %{role: role}, socket}
       {:error, reason} ->
         {:error, %{message: reason}}
@@ -28,7 +27,8 @@ defmodule Ref.TicTacToeChannel do
     end
   end
 
-  def handle_info({:initial_game_state, game_state}, socket) do
+  def handle_info(:broadcast_game_state, socket) do
+    {:ok, game_state} = Ref.TicTacToe.current_state(socket.topic)
     broadcast! socket, "state", game_state
     {:noreply, socket}
   end
