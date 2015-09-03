@@ -23,6 +23,14 @@ defmodule TicTacToeGameTest do
     assert {:error, "game is full"} == TicTacToe.join_or_create_game(@game_topic, %{token: "t3", name: "snob"})
   end
 
+  test "A user can re-join the game" do
+    assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
+    assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
+    assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t", name: "rob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+    assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
+  end
+
   test "the game state can be requested" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
     assert {:ok, game_state} = TicTacToe.current_state(@game_topic)

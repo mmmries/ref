@@ -46,17 +46,21 @@ defmodule Ref.TicTacToe do
   end
 
   def handle_call({:join, %{token: token, name: name}}, _from, %{players: players}=state) do
-    case Enum.count(players) do
-      0 ->
-        players = Dict.put(players, token, %{name: name, role: "X"})
-        new_state = %{state | players: players}
-        {:reply, {:ok, "X"}, new_state, @timeout}
-      1 ->
-        players = Dict.put(players, token, %{name: name, role: "O"})
-        new_state = %{state | players: players, whose_turn: "X"}
-        {:reply, {:ok, "O"}, new_state, @timeout}
-      _else ->
-        {:reply, {:error, "game is full"}, state, @timeout}
+    case Dict.get(players, token) do
+      %{role: role} ->
+        {:reply, {:ok, role}, state, @timeout}
+      nil -> case Enum.count(players) do
+        0 ->
+          players = Dict.put(players, token, %{name: name, role: "X"})
+          new_state = %{state | players: players}
+          {:reply, {:ok, "X"}, new_state, @timeout}
+        1 ->
+          players = Dict.put(players, token, %{name: name, role: "O"})
+          new_state = %{state | players: players, whose_turn: "X"}
+          {:reply, {:ok, "O"}, new_state, @timeout}
+        _else ->
+          {:reply, {:error, "game is full"}, state, @timeout}
+        end
     end
   end
 
