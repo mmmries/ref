@@ -3,6 +3,7 @@ defmodule Ref.UserSocket do
 
   ## Channels
   channel "tictactoe:*", Ref.TicTacToeChannel
+  channel "matchup:*", Ref.MatchupChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
