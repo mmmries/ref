@@ -38,6 +38,7 @@ defmodule Ref.TicTacToe do
       players: %{},
       topic: topic,
       whose_turn: nil,
+      winner: nil,
     }, @timeout}
   end
 
@@ -77,13 +78,16 @@ defmodule Ref.TicTacToe do
           case game_over?(new_board) do
           false ->
             new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
-            {:reply, {:ok, %{board: new_board, whose_turn: new_state.whose_turn}}, new_state}
+            broadcast_state(new_state)
+            {:reply, {:ok, public_state(new_state)}, new_state}
           :tie ->
-            new_state = %{state | board: new_board, whose_turn: nil}
-            {:stop, :normal, {:game_over, public_state(new_state), :tie}, new_state}
+            new_state = %{state | board: new_board, whose_turn: nil, winner: :tie}
+            broadcast_state(new_state)
+            {:stop, :normal, {:game_over, public_state(new_state)}, new_state}
           winner ->
-            new_state = %{state | board: new_board, whose_turn: nil}
-            {:stop, :normal, {:game_over, public_state(new_state), winner}, new_state}
+            new_state = %{state | board: new_board, whose_turn: nil, winner: winner}
+            broadcast_state(new_state)
+            {:stop, :normal, {:game_over, public_state(new_state)}, new_state}
           end
         _ ->
           {:reply, {:error, "invalid move, square taken"}, state}
@@ -105,6 +109,14 @@ defmodule Ref.TicTacToe do
   end
 
   ## Private Functions
+  defp broadcast_state(state) do
+    event = case state.winner do
+      nil -> "state"
+      _ -> "game_over"
+    end
+    Ref.Endpoint.broadcast state.topic, event, public_state(state)
+  end
+
   defp game_over?([x,x,x,_,_,_,_,_,_]) when x != nil, do: x
   defp game_over?([_,_,_,x,x,x,_,_,_]) when x != nil, do: x
   defp game_over?([_,_,_,_,_,_,x,x,x]) when x != nil, do: x
@@ -123,7 +135,7 @@ defmodule Ref.TicTacToe do
   defp next_turn("X"), do: "O"
   defp next_turn("O"), do: "X"
 
-  defp public_state(%{board: board, whose_turn: whose_turn}) do
-    %{board: board, whose_turn: whose_turn}
+  defp public_state(%{board: board, whose_turn: whose_turn, winner: winner}) do
+    %{board: board, whose_turn: whose_turn, winner: winner}
   end
 end
