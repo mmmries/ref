@@ -20,11 +20,15 @@ defmodule Ref.TicTacToe.Random do
     %{token: token, topic: topic} = state
     idx = pick_index(board)
     :timer.sleep(sleep_between_moves)
-    {:ok, _board_state} = Ref.TicTacToe.move(topic, %{token: token, square: idx})
+    case Ref.TicTacToe.move(topic, %{token: token, square: idx}) do
+      {:ok, _game_state} -> nil
+      {:game_over, _game_state} -> nil
+      {:error, "not your turn"} -> nil
+    end
     {:noreply, state}
   end
 
-  def handle_info(%{event: "game_over"}, %{topic: topic}=state) do
+  def handle_info(%{event: "game_over"}, state) do
     {:stop, :normal, state}
   end
 
