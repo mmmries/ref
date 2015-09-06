@@ -41,8 +41,12 @@ defmodule Ref.TicTacToeChannel do
     {:noreply, socket}
   end
 
-  defp start_ai_if_requested(topic, %{"ai" => "random"}) do
-    Ref.TicTacToe.Random.start(topic, 1_000)
+  defp start_ai_if_requested(topic, %{"ai" => "random"}=join) do
+    wait = case join do
+      %{"wait" => wait_str} -> String.to_integer(wait_str)
+      _ -> 1000
+    end
+    Ref.TicTacToe.Random.start(topic, wait)
   end
   defp start_ai_if_requested(_topic, _message), do: nil
 end
