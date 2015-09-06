@@ -34,22 +34,22 @@ defmodule TicTacToeGameTest do
   test "the game state can be requested" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
     assert {:ok, game_state} = TicTacToe.current_state(@game_topic)
-    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: nil}
+    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: nil, winner: nil}
     assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
     assert {:ok, game_state} = TicTacToe.current_state(@game_topic)
-    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
+    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X", winner: nil}
   end
 
   test "players can make a move" do
     assert {:ok, "X"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t1", name: "george"})
     assert {:ok, "O"} = TicTacToe.join_or_create_game(@game_topic, %{token: "t2", name: "bob"})
     {:ok, game_state} = TicTacToe.current_state(@game_topic)
-    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
+    assert game_state == %{board: [nil,nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "X", winner: nil}
 
     assert {:ok, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 0})
-    assert %{board: ["X",nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "O"} == game_state
+    assert %{board: ["X",nil,nil,nil,nil,nil,nil,nil,nil], whose_turn: "O", winner: nil} == game_state
     assert {:ok, game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 1})
-    assert game_state == %{board: ["X","O",nil,nil,nil,nil,nil,nil,nil], whose_turn: "X"}
+    assert game_state == %{board: ["X","O",nil,nil,nil,nil,nil,nil,nil], whose_turn: "X", winner: nil}
   end
 
   test "games end when a player wins" do
@@ -59,8 +59,8 @@ defmodule TicTacToeGameTest do
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 3})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 1})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 4})
-    assert {:game_over, game_state, "X"} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
-    assert game_state == %{board: ["X","X","X","O","O",nil,nil,nil,nil], whose_turn: nil}
+    assert {:game_over, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
+    assert game_state == %{board: ["X","X","X","O","O",nil,nil,nil,nil], whose_turn: nil, winner: "X"}
     assert nil = Process.whereis(@game_atom)
   end
 
@@ -75,8 +75,8 @@ defmodule TicTacToeGameTest do
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 6})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 5})
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 8})
-    assert {:game_over, game_state, :tie} = TicTacToe.move(@game_topic, %{token: "t1", square: 7})
-    assert game_state == %{board: ["X","O","X","O","X","X","O","X","O"], whose_turn: nil}
+    assert {:game_over, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 7})
+    assert game_state == %{board: ["X","O","X","O","X","X","O","X","O"], whose_turn: nil, winner: :tie}
     assert nil = Process.whereis(@game_atom)
   end
 
