@@ -13,25 +13,23 @@ defmodule Ref.TicTacToe.Random do
     token = :rand.uniform |> Float.to_string
     {:ok, role} = Ref.TicTacToe.join_or_create_game(topic, %{token: token, name: @name})
     Ref.Endpoint.subscribe(self, topic)
-    state = %{topic: topic, token: token, role: role, sleep_between_moves: sleep_between_moves}
-    IO.inspect state
-    {:ok, state}
+    {:ok, %{topic: topic, token: token, role: role, sleep_between_moves: sleep_between_moves}}
   end
 
   def handle_info(%{event: "state", payload: %{board: board, whose_turn: role}}, %{role: role, sleep_between_moves: sleep_between_moves}=state) do
     %{token: token, topic: topic} = state
     idx = pick_index(board)
     :timer.sleep(sleep_between_moves)
-    {:ok, _game_state} = Ref.TicTacToe.move(topic, %{token: token, square: idx})
+    {:ok, _board_state} = Ref.TicTacToe.move(topic, %{token: token, square: idx})
     {:noreply, state}
   end
 
-  def handle_info(%{event: "game_over"}, state) do
+  def handle_info(%{event: "game_over"}, %{topic: topic}=state) do
     {:stop, :normal, state}
   end
 
   def handle_info(msg, state) do
-    IO.puts "Random AI received a message"
+    IO.puts "#{@name} received a message"
     IO.inspect msg
     {:noreply, state}
   end
