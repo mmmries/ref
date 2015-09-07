@@ -7,6 +7,6 @@ defmodule Ref.PageController do
   end
 
   defp ongoing_game_ids do
-    Ref.TicTacToe.ongoing_games |> Enum.map &( String.replace(&1, "tictactoe:", "") )
+    TicTacToe.ongoing_games |> Enum.map &( String.replace(&1, "tictactoe:", "") )
   end
 end
