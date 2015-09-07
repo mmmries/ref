@@ -70,8 +70,10 @@ window.TicTacToe = function(game_id, just_watching) {
         log(msg.winner+" is the winner!")
         stat.text(msg.winner+" is the winner!")
       }
-      channel.leave()
-      socket.disconnect()
+      if(!just_watching){
+        channel.leave()
+        socket.disconnect()
+      }
     }
   )
 
