@@ -10,6 +10,7 @@ defmodule TicTacToeGameTest do
     TicTacToe.ongoing_games |> Enum.each fn(game_topic) ->
       game_atom = String.to_atom(game_topic)
       :stopped = GenServer.call(game_atom, :stop)
+      :timer.sleep(1)
     end
   end
 
