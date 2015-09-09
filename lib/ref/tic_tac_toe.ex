@@ -67,10 +67,10 @@ defmodule Ref.TicTacToe do
 
   def handle_call({:move, %{token: token, square: square}},_from, state) do
     case Dict.get(state.players, token) do
-    nil -> {:reply, {:error, "you are not in this game"}, state}
+    nil -> {:reply, {:error, "you are not in this game"}, state, @timeout}
     player ->
       case player.role == state.whose_turn do
-      false -> {:reply, {:error, "not your turn"}, state}
+      false -> {:reply, {:error, "not your turn"}, state, @timeout}
       true ->
         case Enum.at(state.board, square) do
         nil ->
@@ -79,7 +79,7 @@ defmodule Ref.TicTacToe do
           false ->
             new_state = %{state | board: new_board, whose_turn: next_turn(player.role)}
             broadcast_state(new_state)
-            {:reply, {:ok, public_state(new_state)}, new_state}
+            {:reply, {:ok, public_state(new_state)}, new_state, @timeout}
           :tie ->
             new_state = %{state | board: new_board, whose_turn: nil, winner: :tie}
             broadcast_state(new_state)
@@ -90,7 +90,7 @@ defmodule Ref.TicTacToe do
             {:stop, :normal, {:game_over, public_state(new_state)}, new_state}
           end
         _ ->
-          {:reply, {:error, "invalid move, square taken"}, state}
+          {:reply, {:error, "invalid move, square taken"}, state, @timeout}
         end
       end
     end
