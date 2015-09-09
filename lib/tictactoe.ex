@@ -1,6 +1,6 @@
 defmodule Ref.TicTacToe do
   use GenServer
-  @timeout 600_000 # timeout if the game is inactive for 10min
+  @timeout 120_000 # timeout if the game is inactive for 2min
 
   ## Public Interface
   def current_state(topic) do
