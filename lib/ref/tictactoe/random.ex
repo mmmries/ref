@@ -9,7 +9,7 @@ defmodule Ref.TicTacToe.Random do
 
   # Callbacks
   def init({topic, sleep_between_moves}) do
-    :rand.seed(:exs1024)
+    :random.seed(:erlang.timestamp())
     token = :rand.uniform |> Float.to_string
     {:ok, role} = Ref.TicTacToe.join_or_create_game(topic, %{token: token, name: @name})
     Ref.Endpoint.subscribe(self, topic)
