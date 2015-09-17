@@ -38,12 +38,16 @@ defmodule Ref.TicTacToeChannel do
     {:noreply, socket}
   end
 
-  defp start_ai_if_requested(topic, %{"ai" => "random"}=join) do
+  defp start_ai_if_requested(topic, %{"ai" => ai}=join) do
     wait = case join do
       %{"wait" => wait_str} -> String.to_integer(wait_str)
       _ -> 1000
     end
-    Ref.TicTacToe.AI.start(topic, Ref.TicTacToe.Random, wait)
+    case ai do
+      "random" -> Ref.TicTacToe.AI.start(topic, Ref.TicTacToe.Random, wait)
+      "smart" -> Ref.TicTacToe.AI.start(topic, Ref.TicTacToe.Smart, wait)
+      _ -> :no_op
+    end
   end
   defp start_ai_if_requested(_topic, _message), do: nil
 end
