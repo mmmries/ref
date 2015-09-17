@@ -28,7 +28,7 @@
     The topic must be prefix with <span class="code">tictactoe:</span> so that the server knows this is going to be a tic-tac-toe game.
     The <span class="code">token</span> is just a unique identifer for you as a player. This makes it so that your opponent can't make a move when it is your turn without knowing your token.
     <br />
-    If you don't want to wait for an opponent you can send along <span class="code">ai":"random</span> and the server will start up an AI opponent for you.
+    If you don't want to wait for an opponent you can send along <span class="code">ai":"random</span> or <span class="code">ai":"smart</span> and the server will start up an AI opponent for you.
   </div>
   <div class="col-lg-6 col-md-6 col-sm-6">
     <h5>To The Server</h5>
