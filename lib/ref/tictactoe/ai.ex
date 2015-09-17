@@ -20,7 +20,7 @@ defmodule Ref.TicTacToe.AI do
   def handle_info(%{event: "state"}=game_state, state) do
     %{payload: %{board: board}} = game_state
     %{token: token, topic: topic} = state
-    square = apply(state.ai_module, :pick_square, [board])
+    square = apply(state.ai_module, :pick_square, [board, state.role])
     :timer.sleep(state.sleep_between_moves)
     case Ref.TicTacToe.move(topic, %{token: state.token, square: square}) do
       {:ok, _game_state} -> nil
