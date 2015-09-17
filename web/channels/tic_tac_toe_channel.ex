@@ -43,7 +43,7 @@ defmodule Ref.TicTacToeChannel do
       %{"wait" => wait_str} -> String.to_integer(wait_str)
       _ -> 1000
     end
-    Ref.TicTacToe.Random.start(topic, wait)
+    Ref.TicTacToe.AI.start(topic, Ref.TicTacToe.Random, wait)
   end
   defp start_ai_if_requested(_topic, _message), do: nil
 end
