@@ -62,7 +62,7 @@ defmodule TicTacToeGameTest do
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 4})
     assert {:game_over, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 2})
     assert game_state == %{board: ["X","X","X","O","O",nil,nil,nil,nil], whose_turn: nil, winner: "X"}
-    assert nil = Process.whereis(@game_atom)
+    assert nil == Process.whereis(@game_atom)
   end
 
   test "games end in cats cradle" do
@@ -78,7 +78,7 @@ defmodule TicTacToeGameTest do
     assert {:ok, _game_state} = TicTacToe.move(@game_topic, %{token: "t2", square: 8})
     assert {:game_over, game_state} = TicTacToe.move(@game_topic, %{token: "t1", square: 7})
     assert game_state == %{board: ["X","O","X","O","X","X","O","X","O"], whose_turn: nil, winner: :tie}
-    assert nil = Process.whereis(@game_atom)
+    assert nil == Process.whereis(@game_atom)
   end
 
   test "provides a list of ongoing games" do
