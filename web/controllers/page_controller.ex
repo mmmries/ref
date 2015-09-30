@@ -3,7 +3,8 @@ defmodule Ref.PageController do
   alias Ref.TicTacToe
 
   def index(conn, _params) do
-    render conn, "index.html", ongoing_games: ongoing_game_ids
+    random_game_id = :rand.uniform |> Float.to_string
+    render conn, "index.html", ongoing_games: ongoing_game_ids, random_game_id: random_game_id
   end
 
   defp ongoing_game_ids do

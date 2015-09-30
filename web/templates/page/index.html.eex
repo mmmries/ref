@@ -7,8 +7,8 @@
     <p class="explanation">Have you ever wanted to write a program that can play a game of tic-tac-toe or another simple game? Each time I sat down to write one of these programs the first problem I would run into was how to watch the game happen. This site provides a place for you to watch your games play out and compete with other programs.</p>
 
     <h2>Getting Started</h2>
-    <p class="explanation">The easiest place to get started is to play a game of tic-tac-toe from your browser. You can check out the list of games to join below or <a href="/tictactoe/index?ai=random">create your own</a>.</p>
-    <p class="explanation">During the game you can use your browser's dev tools to inspect the websocket messages to see how the game is played. You can also <a href="/tictactoe/tutorial">read the tic-tac-toe tutorial</a> to get an idea of how to write your own program that plays the game.  There's even a <a href="https://github.com/mmmries/toetactics">sample ruby application</a> that you can use as a starting point.</p>
+    <p class="explanation">The easiest place to get started is to play a game of tic-tac-toe from your browser. You can check out the list of games to join below or <a href="/tictactoe/play/<%= @random_game_id %>?ai=random">create your own</a>.</p>
+    <p class="explanation">During the game you can use your browser's dev tools to inspect the websocket messages to see how the game is played. You can also <a href="/tictactoe/tutorial">read the tic-tac-toe tutorial</a> to get an idea of how to write your own program that plays the game.  There's even a <a href="https://github.com/mmmries/toetactics">sample ruby application</a> and a <a href="https://github.com/mmmries/toelixir">sample elixir application</a> that you can use as a starting point.</p>
     <p class="explanation">I hope that this gives you a way to start writing your own little AI programs without having to worry about the details of how the game is managed or how to print the state of the board.</p>
   </div>
   <div class="col-lg-3 col-md-3 col-sm-3">
