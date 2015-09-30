@@ -15,10 +15,15 @@ import "deps/phoenix_html/web/static/js/phoenix_html"
 
 import {Socket} from "deps/phoenix/web/static/js/phoenix"
 
+let token = window.localStorage.getItem('token')
+if( token === null ) {
+  token = ((Math.random() * 10000) + "")
+  window.localStorage.setItem('token', token)
+}
+
 window.TicTacToe = function(game_id, just_watching, ai) {
   let socket = new Socket("/socket")
   socket.connect()
-  let token = ((Math.random() * 10000) + "")
   let channel = socket.channel("tictactoe:"+game_id, {token: token, name: "anonymous", just_watching: just_watching, ai: ai})
   let log_div = $('#log')
   let log = function(message) {
