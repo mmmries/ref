@@ -1,15 +1,14 @@
-FROM hqmq/docker-elixir:1.0.5.0
+FROM hqmq/alpine-elixir:0.1
 MAINTAINER Michael Ries <michael@riesd.com>
 
-EXPOSE 4000
+ENV MIX_ENV=prod PORT=4000
+ADD mix.exs mix.lock ./
+RUN mix do deps.get --only prod, deps.compile
+ADD config ./config
+ADD lib ./lib
+ADD priv ./priv
+ADD web ./web
+RUN mix do compile
+RUN mix phoenix.digest
 
-ADD . /ref
-WORKDIR /ref
-RUN mix clean
-RUN mix local.hex --force
-RUN mix local.rebar --force
-RUN MIX_ENV=prod mix deps.get --only prod
-RUN MIX_ENV=prod mix compile
-RUN MIX_ENV=prod mix phoenix.digest
-
-CMD PORT=4000 MIX_ENV=prod mix phoenix.server
+CMD mix run --no-deps-check --no-halt
