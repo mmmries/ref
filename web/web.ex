@@ -18,7 +18,7 @@ defmodule Ref.Web do
 
   def model do
     quote do
-      use Ecto.Model
+      # Define common model functionality
     end
   end
 
@@ -26,11 +26,8 @@ defmodule Ref.Web do
     quote do
       use Phoenix.Controller
 
-      alias Ref.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
-
       import Ref.Router.Helpers
+      import Ref.Gettext
     end
   end
 
@@ -45,6 +42,8 @@ defmodule Ref.Web do
       use Phoenix.HTML
 
       import Ref.Router.Helpers
+      import Ref.ErrorHelpers
+      import Ref.Gettext
     end
   end
 
@@ -57,11 +56,7 @@ defmodule Ref.Web do
   def channel do
     quote do
       use Phoenix.Channel
-
-      alias Ref.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
-
+      import Ref.Gettext
     end
   end
 
