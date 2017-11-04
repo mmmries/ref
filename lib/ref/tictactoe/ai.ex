@@ -12,17 +12,16 @@ defmodule Ref.TicTacToe.AI do
     token = :rand.uniform |> Float.to_string
     name = apply(ai_module, :name, [])
     {:ok, role} = Ref.TicTacToe.join_or_create_game(topic, %{token: token, name: name})
-    Ref.Endpoint.subscribe(self, topic)
+    Ref.Endpoint.subscribe(topic)
     apply(ai_module, :init, [])
     {:ok, %{ai_module: ai_module, topic: topic, token: token, role: role, sleep_between_moves: sleep_between_moves}}
   end
 
   def handle_info(%{event: "state"}=game_state, state) do
     %{payload: %{board: board}} = game_state
-    %{token: token, topic: topic} = state
     square = apply(state.ai_module, :pick_square, [board, state.role])
     :timer.sleep(state.sleep_between_moves)
-    case Ref.TicTacToe.move(topic, %{token: state.token, square: square}) do
+    case Ref.TicTacToe.move(state.topic, %{token: state.token, square: square}) do
       {:ok, _game_state} -> nil
       {:game_over, _game_state} -> nil
       {:error, "not your turn"} -> nil
