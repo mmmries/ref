@@ -1,4 +1,4 @@
-FROM hqmq/alpine-elixir:0.1
+FROM hqmq/alpine-elixir:1.0
 MAINTAINER Michael Ries <michael@riesd.com>
 
 ENV MIX_ENV=prod PORT=4000
