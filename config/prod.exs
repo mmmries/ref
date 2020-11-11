@@ -13,7 +13,7 @@ use Mix.Config
 # which you typically run after static files are built.
 config :ref, Ref.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [host: "example.com", port: 80],
+  url: [host: "ref.riesd.com", port: 80],
   cache_static_manifest: "priv/static/manifest.json",
   check_origin: false,
   secret_key_base: "+p0P7lYNVYnSc5xlk5zG/U9a8OUO4+iA90pBxk1kgImiuhSXZfzfUTi8sCMxydaT"
