@@ -15,7 +15,8 @@ config :ref, Ref.Endpoint,
   http: [port: {:system, "PORT"}],
   url: [host: "example.com", port: 80],
   cache_static_manifest: "priv/static/manifest.json",
-  check_origin: false
+  check_origin: false,
+  secret_key_base: "+p0P7lYNVYnSc5xlk5zG/U9a8OUO4+iA90pBxk1kgImiuhSXZfzfUTi8sCMxydaT"
 
 # Do not print debug messages in production
 config :logger, level: :info
@@ -45,7 +46,3 @@ config :logger, level: :info
 # Check `Plug.SSL` for all available options in `force_ssl`.
 
 config :phoenix, :serve_endpoints, true
-
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
